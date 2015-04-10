@@ -31,14 +31,59 @@ class Application extends CI_Controller {
      * Render this page
      */
     function render() {
-        $this->data['menubar'] = $this->parser->parse('_menubar', $this->config->item('menu_choices'),true);
+        $this->data['menubar'] = $this->makemenu();
+        //$this->data['menubar'] = $this->parser->parse('_menubar', $this->config->item('menu_choices'),true);
         $this->data['content'] = $this->parser->parse($this->data['pagebody'], $this->data, true);
 
         // finally, build the browser page!
         $this->data['data'] = &$this->data;
         $this->parser->parse('_template', $this->data);
     }
+    
+    function restrict($roleNeeded = null) {
+        $userRole = $this->session->userdata('userRole');
+        if ($roleNeeded != null) {
+          if (is_array($roleNeeded)) {
+            if (!in_array($userRole, $roleNeeded)) {
+              redirect("/");
+              return;
+            }
+          } else if ($userRole != $roleNeeded) {
+            redirect("/");
+            return;
+          }
+        }
+    }
 
+    function makemenu(){
+        $menulist = $this->config->item('menu_choices');
+        //get role & name from session
+        $userRole = $this->session->userdata('userRole');
+        // make array, with menu choice for alpha
+        $menu = array('menudata' => array($menulist['menudata']['alpha']));
+        switch($userRole){
+        // if user, add menu choice for beta and logout
+            case ROLE_USER:
+                array_push($menu['menudata'], $menulist['menudata']['beta']);
+                array_push($menu['menudata'], $menulist['menudata']['logout']);
+                break;
+        // if admin, add menu choices for beta, gamma and logout
+            case ROLE_ADMIN:
+                array_push($menu['menudata'], $menulist['menudata']['beta']);
+                array_push($menu['menudata'], $menulist['menudata']['gamma']);
+                array_push($menu['menudata'], $menulist['menudata']['logout']);
+                break;
+        // if not logged in, add menu choice to login
+            default:
+                array_push($menu['menudata'], $menulist['menudata']['login']);
+                
+        }
+        
+        // return the choices array
+        return $this->parser->parse('_menubar', $menu, true);
+    }
+    
+    
 }
 
 /* End of file MY_Controller.php */

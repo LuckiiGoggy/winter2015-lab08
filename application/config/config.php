@@ -6,9 +6,11 @@ if (!defined('BASEPATH'))
 // the menu basics (text navbar)
 $config['menu_choices'] = array(
     'menudata' => array(
-	array('name' => "Alpha", 'link' => '/alpha'),
-	array('name' => "Beta", 'link' => '/beta'),
-	array('name' => "Gamma", 'link' => '/gamma'),
+	'alpha' => array('name' => "Alpha", 'link' => '/alpha'),
+	'beta'  => array('name' => "Beta", 'link' => '/beta'),
+	'gamma' => array('name' => "Gamma", 'link' => '/gamma'),
+        'login' => array('name' => "Login", 'link' => '/auth'),
+        'logout'=> array('name' => "Logout", 'link' => '/auth/logout'),
         )
     );
 
